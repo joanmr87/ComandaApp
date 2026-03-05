@@ -6,6 +6,15 @@ export async function middleware(request: NextRequest) {
         request,
     })
 
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+        console.error("CRITICAL ERROR: Missing Supabase environment variables in Vercel.")
+        // Return a clear 500 response so Vercel doesn't show a generic MIDDLEWARE_INVOCATION_FAILED
+        return new NextResponse(
+            "Configuración incompleta: Faltan las variables de entorno de Supabase (NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_ANON_KEY) en Vercel. Búscalas en la configuración de Vercel y agregalas.",
+            { status: 500 }
+        )
+    }
+
     const supabase = createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
